@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExplainIt — AI Course Simplifier</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════ NAVBAR ═══════════════════════ -->
+<nav class="navbar navbar-expand-lg fixed-top" id="mainNav">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <span class="brand-icon"><i class="bi bi-mortarboard-fill"></i></span>
+      <span class="brand-text">Explain<span class="accent">It</span></span>
+    </a>
+    <div class="d-flex align-items-center gap-3 ms-auto">
+      <span class="badge-model">
+        <i class="bi bi-cpu-fill me-1"></i>IBM Granite
+      </span>
+      <button class="btn btn-icon" id="themeToggle" title="Toggle theme">
+        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ MAIN LAYOUT ═══════════════════════ -->
+<div class="app-wrapper">
+
+  <!-- ── LEFT PANEL: Input ── -->
+  <aside class="input-panel" id="inputPanel">
+
+    <div class="panel-header">
+      <i class="bi bi-journal-text me-2 accent"></i>
+      <span>Course Content</span>
+    </div>
+
+    <!-- File upload -->
+    <div class="input-group-custom">
+      <label class="form-label-custom">
+        <i class="bi bi-file-earmark-arrow-up me-1"></i>Upload a file
+        <span class="label-muted">(PDF or TXT)</span>
+      </label>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept=".pdf,.txt" class="upload-input" />
+        <div class="upload-prompt" id="uploadPrompt">
+          <i class="bi bi-cloud-arrow-up upload-icon"></i>
+          <span class="upload-text">Drop a file here or <span class="upload-link">browse</span></span>
+          <span class="upload-hint">.pdf · .txt — max 25 MB</span>
+        </div>
+        <div class="upload-status d-none" id="uploadStatus">
+          <i class="bi bi-file-earmark-check-fill upload-status-icon"></i>
+          <span id="uploadFileName">file.pdf</span>
+          <button class="upload-clear-btn" id="uploadClearBtn" title="Remove file">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </div>
+        <div class="upload-progress d-none" id="uploadProgress">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Extracting text…
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div class="or-divider"><span>or</span></div>
+
+    <!-- Content textarea -->
+    <div class="input-group-custom">
+      <label class="form-label-custom" for="courseContent">
+        <i class="bi bi-clipboard2-text me-1"></i>Paste your content
+      </label>
+      <textarea
+        id="courseContent"
+        class="form-textarea"
+        placeholder="Paste lecture notes, textbook excerpts, research papers, or any educational material here…"
+        rows="9"
+        spellcheck="true"
+      ></textarea>
+      <div class="char-count" id="charCount">0 characters</div>
+    </div>
+
+    <!-- Proficiency selector -->
+    <div class="input-group-custom mt-3">
+      <label class="form-label-custom">
+        <i class="bi bi-bar-chart-steps me-1"></i>Proficiency Level
+      </label>
+      <div class="level-selector" id="levelSelector">
+        <button class="level-btn active" data-level="beginner">
+          <span class="level-icon">🌱</span>
+          <span class="level-label">Beginner</span>
+          <span class="level-desc">No prior knowledge</span>
+        </button>
+        <button class="level-btn" data-level="intermediate">
+          <span class="level-icon">📚</span>
+          <span class="level-label">Intermediate</span>
+          <span class="level-desc">Some background</span>
+        </button>
+        <button class="level-btn" data-level="expert">
+          <span class="level-icon">🔬</span>
+          <span class="level-label">Expert</span>
+          <span class="level-desc">Deep domain knowledge</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Simplify button -->
+    <button class="btn-simplify mt-4" id="simplifyBtn">
+      <span id="simplifyBtnText">
+        <i class="bi bi-stars me-2"></i>Simplify Content
+      </span>
+      <span id="simplifyBtnLoading" class="d-none">
+        <span class="spinner-border spinner-border-sm me-2"></span>Processing…
+      </span>
+    </button>
+
+    <!-- Clear session -->
+    <button class="btn-clear mt-2" id="clearBtn">
+      <i class="bi bi-trash3 me-1"></i>Clear Session
+    </button>
+
+  </aside>
+
+  <!-- ── RIGHT PANEL: Chat UI ── -->
+  <main class="chat-panel" id="chatPanel">
+
+    <div class="panel-header">
+      <i class="bi bi-chat-dots-fill me-2 accent"></i>
+      <span>Simplified Output</span>
+      <span class="ms-auto badge-level" id="currentLevelBadge">🌱 Beginner</span>
+    </div>
+
+    <!-- Chat messages -->
+    <div class="chat-messages" id="chatMessages">
+      <!-- Welcome state -->
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-icon"><i class="bi bi-stars"></i></div>
+        <h3 class="welcome-title">Welcome to ExplainIt</h3>
+        <p class="welcome-sub">
+          Upload a file or paste course content on the left, choose your proficiency level,
+          and let IBM Granite AI transform complex material into crystal-clear explanations.
+        </p>
+        <div class="welcome-features">
+          <div class="feature-chip"><i class="bi bi-file-earmark-arrow-up me-1"></i>PDF &amp; TXT Upload</div>
+          <div class="feature-chip"><i class="bi bi-translate me-1"></i>Plain Language</div>
+          <div class="feature-chip"><i class="bi bi-list-check me-1"></i>Key Takeaways</div>
+          <div class="feature-chip"><i class="bi bi-link-45deg me-1"></i>Real-world Examples</div>
+          <div class="feature-chip"><i class="bi bi-chat-square-dots me-1"></i>Follow-up Chat</div>
+          <div class="feature-chip"><i class="bi bi-hand-thumbs-up me-1"></i>Feedback</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Follow-up chat input -->
+    <div class="chat-input-wrapper" id="chatInputWrapper">
+      <div class="chat-input-row">
+        <div class="chat-input-box">
+          <textarea
+            id="chatMessage"
+            class="chat-textarea"
+            placeholder="Ask a follow-up question about the content…"
+            rows="1"
+          ></textarea>
+        </div>
+        <button class="btn-send" id="sendBtn" title="Send message">
+          <i class="bi bi-send-fill"></i>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ═══════════════════════ ANALYTICS FOOTER ═══════════════════════ -->
+<footer class="analytics-footer" id="analyticsFooter">
+  <div class="analytics-inner">
+    <span class="analytics-label"><i class="bi bi-bar-chart-fill me-1"></i>Session usage:</span>
+    <span class="analytics-pill" id="statBeginner">🌱 Beginner <strong id="cntBeginner">0</strong></span>
+    <span class="analytics-pill" id="statIntermediate">📚 Intermediate <strong id="cntIntermediate">0</strong></span>
+    <span class="analytics-pill" id="statExpert">🔬 Expert <strong id="cntExpert">0</strong></span>
+    <span class="analytics-sep">·</span>
+    <span class="analytics-pill feedback-pill">
+      <i class="bi bi-hand-thumbs-up-fill me-1" style="color:var(--success)"></i><strong id="cntUp">0</strong>
+      <i class="bi bi-hand-thumbs-down-fill ms-2 me-1" style="color:var(--danger)"></i><strong id="cntDown">0</strong>
+    </span>
+    <span class="analytics-sep">·</span>
+    <span class="analytics-total">Total: <strong id="cntTotal">0</strong></span>
+  </div>
+</footer>
+
+<!-- ═══════════════════════ TOAST NOTIFICATION ═══════════════════════ -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="toastNotif" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">Notification</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Marked.js for Markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<!-- App JS -->
+<script src="/static/js/main.js"></script>
+</body>
+</html>
