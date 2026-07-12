@@ -2,7 +2,11 @@
 ### Built with Python Flask · IBM Watsonx.ai · Granite Models
 
 ---
+## Live Demo
 
+🔗 **[https://explainit-course-simplifier.onrender.com](https://explainit-course-simplifier.onrender.com/)**
+
+> Note: hosted on Render's free tier — if inactive for a while, the first load may take ~50 seconds to spin up.
 ## Project Structure
 
 ```
