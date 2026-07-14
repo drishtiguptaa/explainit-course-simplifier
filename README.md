@@ -107,7 +107,7 @@ Visit **http://localhost:5000** in your browser.
 
 Users can upload a `.pdf` or `.txt` file directly in the UI (drag-and-drop or click-to-browse). The file is sent to `POST /api/upload`, the server extracts the text using **PyMuPDF** (PDF) or UTF-8/latin-1 decoding (TXT), and the extracted text is automatically populated into the content box — ready to simplify.
 
-**Limits:** 10 MB maximum file size · `.pdf` and `.txt` supported · `.docx` support can be added by installing `python-docx` and uncommenting the handler in `app.py`.
+**Limits:** 25 MB maximum file size · `.pdf` and `.txt` supported · `.docx` support can be added by installing `python-docx` and uncommenting the handler in `app.py`.
 
 ---
 
